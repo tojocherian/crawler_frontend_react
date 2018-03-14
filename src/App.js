@@ -24,12 +24,22 @@ class App extends Component {
 
   handleSubmit = (event) => {
     if (!this.state.url) return false;
-    console.log('checking0>>>>>>>>>>>>>')
+
+
+
+    // fetch("http://127.0.0.1:8000/api/crawl/",{
+    //     method: "POST",
+    //     body: { url: this.state.url }
+    // })
+    // .then(function(res){
+    //   alert(res.json())
+    //    console.log(res.json())  
+    //   })
 
     // send a post request to client when form button clicked
     // django response back with task_id and unique_id.
     // We have created them in views.py file, remember?
-    $.post('http://127.0.0.1:8000/api/crawl/', { url: this.state.url }, resp => {
+    $.post('http://127.0.0.1:8000/api/crawl/', { url: this.state.url, }, resp => {
         if (resp.error) {
             alert(resp.error)
             return
@@ -45,10 +55,10 @@ class App extends Component {
             // i start to execute checkCrawlStatus method for every 2 seconds
             // Check method's body for more details
             // ####################### HERE ########################
-            console.log('checking1>>>>>>>>>>>>>')
-            this.statusInterval = setInterval(this.checkCrawlStatus, 2000)
+            this.statusInterval = setInterval(this.checkCrawlStatus, 1000)
         });
     });
+    //end of post
   }
 
   componentWillUnmount() {
@@ -60,10 +70,9 @@ class App extends Component {
   checkCrawlStatus = () => {
       // this method do only one thing.
       // Making a request to server to ask status of crawling job
-      $.get('http://127.0.0.1:8000/api/crawl/',
-            { task_id: this.state.taskID, unique_id: this.state.uniqueID }, resp => {
+      $.get('http://127.0.0.1:8000/api/crawl/?task_id='+this.state.taskID+'&unique_id='+this.state.uniqueID,
+            { /*task_id: this.state.taskID, unique_id: this.state.uniqueID*/ }, resp => {
           if (resp.data) {
-            console.log('checking2>>>>>>>>>>>>>')
               // If response contains a data array
               // That means crawling completed and we have results here
               // No need to make more requests.
@@ -80,7 +89,6 @@ class App extends Component {
               clearInterval(this.statusInterval)
               alert(resp.error)
           } else if (resp.status) {
-            console.log('checking4>>>>>>>>>>>>>')
               // but response contains a `status` key and no data or error
               // that means crawling process is still active and running (or pending)
               // don't clear the interval.
@@ -102,13 +110,13 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
          </p>
-          <form onSubmit={this.handleSubmit}>
             <label>
               Name:
               <input type="text" value={this.state.value} onChange={this.handleChange} />
             </label>
-            <input type="submit" value="Submit" />
-          </form>
+            <button onClick={this.handleSubmit}>
+            start
+            </button>
           
         {this.state.data != null &&
         <div>
