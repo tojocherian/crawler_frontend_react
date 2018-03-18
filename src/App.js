@@ -120,7 +120,14 @@ class App extends Component {
           
         {this.state.data != null &&
         <div>
-            <p> {this.state.data}</p>
+            
+                {this.state.data.map((item, index) => (
+                    <p key={index}> {index}:{item} </p>
+                ))}
+
+
+
+               
             <p> {this.state.crawlingStatus}</p>
             </div>
           }
